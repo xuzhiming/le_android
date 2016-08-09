@@ -59,13 +59,13 @@ public class AndroidLogger {
 
     public void log(String uid, String host, String uri, Date requestStartTime, long timeCost, int responseCode) throws JSONException {
         JSONObject msg = new JSONObject();
-        msg.put("request_host", host.isEmpty()?"":host);
-        msg.put("request_uri", uri.isEmpty()?"":uri);
+        msg.put("request_host", host==null?"":host);
+        msg.put("request_uri", uri==null?"":uri);
         msg.put("request_time", timeCost);
         msg.put("request_start_time", logTimeString(requestStartTime));
         msg.put("response_code", responseCode);
         msg.put("network_env", getNetworkClass(context));
-        msg.put("uid", uid.isEmpty()?"":uid);
+        msg.put("uid", uid==null?"":uid);
 
         loggingWorker.addLineToQueue(msg.toString());
     }

@@ -1,5 +1,6 @@
 package com.logentries.net;
 
+import android.util.Log;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
@@ -13,6 +14,7 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
@@ -26,6 +28,7 @@ public class LogentriesClient
 	private static final String LE_HTTP_API = "https://api.grouk.com/webhook/57a3164de4b044eb495b987c/2b01d68e9eca413e84aaf4b9dc8b3913";//"http://js.logentries.com/v1/logs/";   // For HTTP-based input.
 
 	private static final String MG_TOKEN = "57a3164de4b044eb495b987c/2b01d68e9eca413e84aaf4b9dc8b3913";//"http://js.logentries.com/v1/logs/";   // For HTTP-based input.
+	private static final String TAG = "LogentriesAndroidLogger";
 
 
 	// Port number for unencrypted HTTP PUT/Token TCP logging on Logentries server.
@@ -172,8 +175,14 @@ public class LogentriesClient
 			if (data.endsWith("\n"))
 				data = data.substring(0, data.length() - 1);
 			byte[] buffer = encodePacket(data);
+
+			Log.d(TAG, "log send: " + buffer);
+
 			stream.write(buffer);
 			stream.flush();
+
+			Log.d(TAG, "log sent");
+
 
 		} else {
 			// HTTP input mode.
@@ -197,10 +206,12 @@ public class LogentriesClient
 				auth.put("token", endpointToken);
 
 				byte[] encodeData = encodePacket(auth.toString());
+				Log.d(TAG, "authHeader send: " + encodeData);
 
 				stream.write(encodeData);
 				stream.flush();
 
+				Log.d(TAG, "authHeader sent");
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -209,18 +220,17 @@ public class LogentriesClient
 	}
 
 	//bytes: version->0x7f extension->0x06 packet-length-header->4bytes
-	byte[] encodePacket(String rawData){
+	byte[] encodePacket(String rawData) throws UnsupportedEncodingException {
 
-		byte[] rawDataBytes = rawData.getBytes();
+		byte[] rawDataBytes = rawData.getBytes("UTF8");
+		int total = 6 + rawDataBytes.length;
+		ByteBuffer buffer = ByteBuffer.allocate(total);
+		buffer.put((byte)0x7f).put((byte)0x06).putInt(rawDataBytes.length).put(rawDataBytes);
 
-		ByteArrayBuffer buffer = new ByteArrayBuffer(6 + rawDataBytes.length);
-		byte[]lens = intToByteArray(4);
-		buffer.append(0x7f);
-		buffer.append(0x06);
-		buffer.append(lens, 0, 4);
-		//
-		buffer.append(rawDataBytes, 0, rawDataBytes.length);
-		return buffer.buffer();
+		byte[] read = new byte[buffer.position()];
+		buffer.position(0);
+		buffer.get(read);
+		return read;
 	}
 
 	public void close()

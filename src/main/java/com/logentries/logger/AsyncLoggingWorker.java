@@ -268,6 +268,7 @@ public class AsyncLoggingWorker {
             //TODO;
             try {
                 this.leClient.sendAuthHeader();
+                Log.d(TAG, "sendAuthHeader");
             } catch (IOException e) {
                 e.printStackTrace();
             }
