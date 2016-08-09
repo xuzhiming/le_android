@@ -1,4 +1,4 @@
-package com.logentries.logger;
+package com.hzmc.logger;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

@@ -1,4 +1,4 @@
-group 'com.logentries'
+group 'com.hzmc'
 version '1.0'
 
 apply plugin: 'java'
@@ -15,7 +15,7 @@ task makeLibrary(type: Copy) {
     include('*.jar')
 
     from 'build'
-    rename 'logentries-(.*)', 'logentries-android.jar'
+    rename 'hzmc-(.*)', 'hzmc-android.jar'
 }
 
 makeLibrary.dependsOn build

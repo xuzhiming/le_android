@@ -1,4 +1,4 @@
-package com.logentries.logger;
+package com.hzmc.logger;
 
 import java.io.IOException;
 import java.util.*;
@@ -7,8 +7,8 @@ import java.util.concurrent.TimeUnit;
 
 import android.content.Context;
 import android.util.Log;
-import com.logentries.misc.Utils;
-import com.logentries.net.LogentriesClient;
+import com.hzmc.misc.Utils;
+import com.hzmc.net.LogentriesClient;
 
 public class AsyncLoggingWorker {
 

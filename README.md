@@ -53,7 +53,7 @@ Add the permission "android.permission.INTERNET" to the project manifest file.
 Use
 ---
 
-In the desired Activity class, ``import com.logentries.logger.AndroidLogger;``
+In the desired Activity class, ``import com.hzmc.logger.AndroidLogger;``
 
 The following simple example shows the library used in a basic Android application Activity - where the logger is set
 to use TCP with a Token UUID "159axea4-xxxx-xxxx-xxxx-xxxxxxxxxxxx" - this is a dummy token for demonstration purposes only.
@@ -64,7 +64,7 @@ When a new instance of the Activity is created, a simple log event message is se
 
 		import android.app.Activity;
 		import android.os.Bundle;
-		import com.logentries.logger.AndroidLogger;
+		import com.hzmc.logger.AndroidLogger;
 		import java.io.IOException;
 
 		public class MyActivity extends Activity {

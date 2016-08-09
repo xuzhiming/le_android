@@ -1,4 +1,4 @@
-package com.logentries.misc;
+package com.hzmc.misc;
 
 import java.lang.reflect.Method;
 import java.net.InetAddress;

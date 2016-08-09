@@ -1,4 +1,4 @@
-group 'com.logentries'
+group 'com.hzmc'
 version '1.0'
 
 ['java', 'signing', 'maven-publish'].each {
@@ -102,9 +102,9 @@ publishing {
             pom.withXml {
                 asNode().children().last() + {
                     resolveStrategy = Closure.DELEGATE_FIRST
-                    name 'logentries-android'
+                    name 'hzmc-android'
                     description 'Logentries Android Logging Library'
-                    url 'http://logentries.com'
+                    url 'http://hzmc.com'
 					
 					// UNCOMMENT IF YOU NEED TO PUBLISH VIA SCM.
                     //scm {
@@ -157,7 +157,7 @@ task makeLibrary(type: Copy) {
     include('*.jar')
 
     from 'build'
-    rename 'logentries-(.*)', 'logentries-android.jar'
+    rename 'hzmc-(.*)', 'hzmc-android.jar'
 }
 
 makeLibrary.dependsOn build

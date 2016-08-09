@@ -1,12 +1,10 @@
-package com.logentries.net;
+package com.hzmc.net;
 
 import android.util.Log;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.ByteArrayBuffer;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -23,7 +21,7 @@ import java.nio.charset.Charset;
 public class LogentriesClient
 {
 	// Logentries server endpoints for logs data.
-	private static final String LE_TOKEN_API = "logs.grouk.com";//"data.logentries.com"; // For token-based stream input
+	private static final String LE_TOKEN_API = "logs.grouk.com";//"data.hzmc.com"; // For token-based stream input
 
 	private static final String LE_HTTP_API = "https://api.grouk.com/webhook/57a3164de4b044eb495b987c/2b01d68e9eca413e84aaf4b9dc8b3913";//"http://js.logentries.com/v1/logs/";   // For HTTP-based input.
 
