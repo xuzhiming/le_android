@@ -2,29 +2,37 @@ package com.logentries.net;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.ByteArrayBuffer;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
 
 public class LogentriesClient
 {
 	// Logentries server endpoints for logs data.
-	private static final String LE_TOKEN_API = "data.logentries.com"; // For token-based stream input
+	private static final String LE_TOKEN_API = "logs.grouk.com";//"data.logentries.com"; // For token-based stream input
 
-	private static final String LE_HTTP_API = "http://js.logentries.com/v1/logs/";   // For HTTP-based input.
+	private static final String LE_HTTP_API = "https://api.grouk.com/webhook/57a3164de4b044eb495b987c/2b01d68e9eca413e84aaf4b9dc8b3913";//"http://js.logentries.com/v1/logs/";   // For HTTP-based input.
+
+	private static final String MG_TOKEN = "57a3164de4b044eb495b987c/2b01d68e9eca413e84aaf4b9dc8b3913";//"http://js.logentries.com/v1/logs/";   // For HTTP-based input.
+
 
 	// Port number for unencrypted HTTP PUT/Token TCP logging on Logentries server.
-	private static final int LE_PORT = 80;
+	private static final int LE_PORT = 9821;
 
 	// Port number for SSL HTTP PUT/TLS Token TCP logging on Logentries server.
-	private static final int LE_SSL_PORT = 443;
+	private static final int LE_SSL_PORT = 9822;
 
 	static final Charset UTF8 = Charset.forName("UTF-8");
 
@@ -65,7 +73,7 @@ public class LogentriesClient
 		}
 
 		if(token == null || token.isEmpty()) {
-			throw new IllegalArgumentException("Token parameter cannot be empty!");
+//			throw new IllegalArgumentException("Token parameter cannot be empty!");
 		}
 
 		useDataHub = isUsingDataHub;
@@ -149,6 +157,8 @@ public class LogentriesClient
 			if(stream == null) {
 				throw new IOException("OutputStream is not initialized!");
 			}
+
+			/*
 			streamFormatter.setLength(0); // Erase all previous data.
 			streamFormatter.append(endpointToken).append(" ");
 			streamFormatter.append(data);
@@ -158,12 +168,59 @@ public class LogentriesClient
 				streamFormatter.append("\n");
 			}
 			stream.write(streamFormatter.toString().getBytes(UTF8));
+			*/
+			if (data.endsWith("\n"))
+				data = data.substring(0, data.length() - 1);
+			byte[] buffer = encodePacket(data);
+			stream.write(buffer);
 			stream.flush();
+
 		} else {
 			// HTTP input mode.
 			postRequest.setEntity(new StringEntity(data, "UTF8"));
 			httpClient.execute(postRequest);
 		}
+	}
+
+	public static final byte[] intToByteArray(int value) {
+		return new byte[] { (byte)(value >>> 24), (byte)(value >>> 16), (byte)(value >>> 8), (byte)value};
+	}
+
+	public void sendAuthHeader() throws IOException {
+		//only tcp need this
+		if (!httpChoice) {
+			if(stream == null) {
+				throw new IOException("OutputStream is not initialized!");
+			}
+			JSONObject auth = new JSONObject();
+			try {
+				auth.put("token", endpointToken);
+
+				byte[] encodeData = encodePacket(auth.toString());
+
+				stream.write(encodeData);
+				stream.flush();
+
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+
+		}
+	}
+
+	//bytes: version->0x7f extension->0x06 packet-length-header->4bytes
+	byte[] encodePacket(String rawData){
+
+		byte[] rawDataBytes = rawData.getBytes();
+
+		ByteArrayBuffer buffer = new ByteArrayBuffer(6 + rawDataBytes.length);
+		byte[]lens = intToByteArray(4);
+		buffer.append(0x7f);
+		buffer.append(0x06);
+		buffer.append(lens, 0, 4);
+		//
+		buffer.append(rawDataBytes, 0, rawDataBytes.length);
+		return buffer.buffer();
 	}
 
 	public void close()

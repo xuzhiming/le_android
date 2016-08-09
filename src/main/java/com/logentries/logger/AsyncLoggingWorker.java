@@ -49,9 +49,9 @@ public class AsyncLoggingWorker {
     public AsyncLoggingWorker(Context context, boolean useSsl, boolean useHttpPost, boolean useDataHub, String logToken,
                               String dataHubAddress, int dataHubPort, boolean logHostName) throws IOException {
 
-        if(!checkTokenFormat(logToken)) {
-            throw new IllegalArgumentException(INVALID_TOKEN);
-        }
+//        if(!checkTokenFormat(logToken)) {
+//            throw new IllegalArgumentException(INVALID_TOKEN);
+//        }
 
         queue = new ArrayBlockingQueue<String>(QUEUE_SIZE);
         localStorage = new LogStorage(context);
@@ -261,12 +261,29 @@ public class AsyncLoggingWorker {
             return false;
         }
 
+        //bytes: version->0x7f extension->0x06 packet-length->4bytes
+
+
+        void sendAuthHeaderPackage(){
+            //TODO;
+            try {
+                this.leClient.sendAuthHeader();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         @Override
         public void run() {
             try {
 
                 // Open connection
-                reopenConnection(MAX_RECONNECT_ATTEMPTS);
+                boolean ret = reopenConnection(MAX_RECONNECT_ATTEMPTS);
+
+                //TODO: send auth header package when connected;
+                if (ret) {
+                    sendAuthHeaderPackage();
+                }
 
                 Queue<String> prevSavedLogs = localStorage.getAllLogsFromStorage(true);
 
@@ -300,6 +317,9 @@ public class AsyncLoggingWorker {
                             // If we have broken connection, then try to re-connect and send
                             // all logs from the local storage. If succeeded - reset numFailures.
                             if(connectionIsBroken && reopenConnection(MAX_RECONNECT_ATTEMPTS)) {
+                                //TODO send auth header package;
+                                sendAuthHeaderPackage();
+
                                 if(tryUploadSavedLogs()) {
                                     connectionIsBroken = false;
                                     numFailures = 0;
@@ -331,7 +351,9 @@ public class AsyncLoggingWorker {
                                 ++numFailures;
 
                                 // Try to re-open the lost connection.
-                                reopenConnection(MAX_RECONNECT_ATTEMPTS);
+                               if(reopenConnection(MAX_RECONNECT_ATTEMPTS)) {
+                                    sendAuthHeaderPackage();
+                                }
                             }
 
                             continue;

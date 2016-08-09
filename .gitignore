@@ -1,1 +1,5 @@
 target/*
+.gradle
+build-scripts/build-and-publish-library/build
+build-scripts/build-and-publish-library/output
+build

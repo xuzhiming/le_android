@@ -135,6 +135,9 @@ public class Utils {
      * @return
      */
     public static String formatMessage(String message, boolean logHostName, boolean isUsingHttp) {
+        if(true)
+            return message;
+
         StringBuilder sb = new StringBuilder();
 
         if(isUsingHttp) {
