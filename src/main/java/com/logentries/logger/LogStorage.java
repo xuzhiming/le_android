@@ -8,7 +8,7 @@ import java.util.*;
 
 public class LogStorage {
 
-    private static final String TAG = "LogentriesAndroidLogger";
+    private static final String TAG = "MGAndroidLogger";
     private static final String STORAGE_FILE_NAME = "LogentriesLogStorage.log";
     private static final long MAX_QUEUE_FILE_SIZE = 10 * 1024 * 1024; // 10 MBytes.
 

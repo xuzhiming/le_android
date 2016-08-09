@@ -11,41 +11,30 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class AndroidLogger {
+public class MGAndroidLogger {
 
-    private static AndroidLogger instance;
+    private static MGAndroidLogger instance;
 
     private Context context;
     private String  webToken;
     private AsyncLoggingWorker loggingWorker;
 
-    private AndroidLogger(Context context, boolean useHttpPost, boolean useSsl, boolean isUsingDataHub, String dataHubAddr, int dataHubPort,
-                          String token, boolean logHostName) throws IOException {
+    private MGAndroidLogger(Context context, boolean useHttpPost, boolean useSsl, boolean isUsingDataHub, String dataHubAddr, int dataHubPort,
+                            String token, boolean logHostName) throws IOException {
         this.context = context;
         this.webToken = token;
         loggingWorker = new AsyncLoggingWorker(context, useSsl, useHttpPost, isUsingDataHub, token, dataHubAddr, dataHubPort, logHostName);
     }
 
-    public static synchronized AndroidLogger createInstance(Context context, boolean useHttpPost, boolean useSsl, boolean isUsingDataHub,
-                                                         String dataHubAddr, int dataHubPort, String token, boolean logHostName)
-            throws IOException {
+    public static synchronized MGAndroidLogger createInstance(Context context, boolean useSsl, String token) throws IOException {
         if(instance != null) {
             instance.loggingWorker.close();
         }
-
-        instance = new AndroidLogger(context, useHttpPost, useSsl, isUsingDataHub, dataHubAddr, dataHubPort, token, logHostName);
+        instance = new MGAndroidLogger(context, false, useSsl, false, null, 0, token, false);
         return instance;
     }
 
-    public static synchronized AndroidLogger createInstance(Context context, boolean useSsl, String token) throws IOException {
-        if(instance != null) {
-            instance.loggingWorker.close();
-        }
-        instance = new AndroidLogger(context, false, useSsl, false, null, 0, token, false);
-        return instance;
-    }
-
-    public static synchronized AndroidLogger getInstance() {
+    public static synchronized MGAndroidLogger getInstance() {
         if(instance != null) {
             return instance;
         } else {

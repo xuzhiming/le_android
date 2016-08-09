@@ -16,7 +16,7 @@ public class AsyncLoggingWorker {
 	 * Constants
 	 */
 
-    private static final String TAG = "LogentriesAndroidLogger";
+    private static final String TAG = "MGAndroidLogger";
 
     private static final int RECONNECT_WAIT = 100; // milliseconds.
     private static final int MAX_QUEUE_POLL_TIME = 1000; // milliseconds.
