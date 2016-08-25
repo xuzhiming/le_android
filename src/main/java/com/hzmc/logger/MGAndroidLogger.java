@@ -1,8 +1,12 @@
 package com.hzmc.logger;
 
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.telephony.TelephonyManager;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,6 +51,10 @@ public class MGAndroidLogger {
     }
 
     public void log(String uid, String host, String uri, Date requestStartTime, long timeCost, int responseCode) throws JSONException {
+        log(uid, host, uri, requestStartTime, timeCost, responseCode, false);
+    }
+
+    public void log(String uid, String host, String uri, Date requestStartTime, long timeCost, int responseCode, boolean bDebug) throws JSONException {
         JSONObject msg = new JSONObject();
         msg.put("request_host", host==null?"":host);
         msg.put("request_uri", uri==null?"":uri);
@@ -55,6 +63,20 @@ public class MGAndroidLogger {
         msg.put("response_code", responseCode);
         msg.put("network_env", getNetworkClass(context));
         msg.put("uid", uid==null?"":uid);
+        msg.put("debug", bDebug);
+
+        PackageInfo pinfo = null;
+        try {
+            PackageManager pm = context.getPackageManager();
+            pinfo = context.getPackageManager().getPackageInfo(context.getApplicationContext().getPackageName(), 0);
+            msg.put("app_version", pinfo.versionName);
+            msg.put("build", pinfo.versionCode);
+            msg.put("device", new JSONObject().put("model", android.os.Build.MODEL).put("systemVer", Build.VERSION.SDK_INT));
+
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
 
         loggingWorker.addLineToQueue(msg.toString());
     }
